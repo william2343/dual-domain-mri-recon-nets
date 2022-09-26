@@ -1,0 +1,9 @@
+[
+    {
+        "name": "Full Transformer",
+        "model_str": "Path/to/TrainedFinalModelParams",
+        "model_class": "FinalModel",
+        "sparsity": "0.05",
+        "results": null
+    }
+]
