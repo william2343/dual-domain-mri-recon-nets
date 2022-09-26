@@ -179,7 +179,7 @@ class Undersample(nn.Module):
         return k_space
 
 # produces undersampled images as output, where undersampling pattern is parameterized.
-class UndersamplerB(nn.Module):
+class Undersampler(nn.Module):
     def __init__(self, 
                  input_shape=(128, 128, 5, 1),
                  sparsity=(1/20.0),

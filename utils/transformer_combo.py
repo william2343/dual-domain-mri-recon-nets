@@ -1,50 +1,13 @@
-import os
-import numpy as np
-import utils
-import matplotlib.image as img
-from matplotlib import pyplot as plt
-import scipy.fft as fft
-from utils.undersample_data import apply_mask_fourier_data
-
-from utils.generate_undersample_mask import generate_undersample_mask
-from utils.util import save_np_array, load_np_array
-
 import torch
-import torchvision
-import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.nn.functional as F
-device = torch.device("cuda:0")
+
+import torch.utils.checkpoint as checkpoint
 
 import math
-import numpy as np
-import matplotlib.pyplot as plt
-
 from einops import rearrange, repeat
-from einops.layers.torch import Rearrange
 
-import torch
-from torch.utils.data import Dataset
-import torch.utils.checkpoint as checkpoint
-import torch.nn as nn
-import torch.nn.functional as F
-
-class CustomDataset(Dataset):
-
-    def __init__(self, input_imgs, label_imgs):
-
-        self.input_imgs = input_imgs
-        self.label_imgs = label_imgs
-
-    def __len__(self):
-        return len(self.input_imgs)
-
-
-    def __getitem__(self, idx):
-        input_img, label_img = self.input_imgs[idx], self.label_imgs[idx]
-        return input_img, label_img
-    
-
+device = torch.device("cuda:0")
 
 class InputProjection(nn.Module):
     def __init__(self, in_channel, out_channel):

@@ -1,20 +1,19 @@
 import torch
-import torchvision
 import torch.nn as nn
 
-from utils.UndersamplerBatched import UndersamplerB
-from utils.transformer import UFormer as UFormerFreq
-from utils.Transformer_img import UFormer as UFormerImage
-from utils.transformer_Combo import UFormer as UFormerCombo
-from utils.img_unet import UNet as UNetImage
-from utils.freq_unet import UNet as UNetFrequency
-from utils.combo_unet import UNet as UNetCombination
-from utils.transformer import model_out_to_img
+from utils.undersampler import Undersampler
+from utils.transformer_kspace import UFormer as UFormerFreq
+from utils.transformer_image import UFormer as UFormerImage
+from utils.transformer_combo import UFormer as UFormerCombo
+from utils.unet_image import UNet as UNetImage
+from utils.unet_kspace import UNet as UNetFrequency
+from utils.unet_combo import UNet as UNetCombination
+from utils.transformer_kspace import model_out_to_img
 
 class FinalModel(nn.Module):
     def __init__(self, sparsity=1/20, bsn=False):
         super().__init__()
-        self.undersampler = UndersamplerB(sparsity=(sparsity), bsn=bsn, pmask_shape=(128, 128, 5, 1)) # with appropriate parameters for undersampling network
+        self.undersampler = Undersampler(sparsity=(sparsity), bsn=bsn, pmask_shape=(128, 128, 5, 1)) # with appropriate parameters for undersampling network
         self.image_transformer = UFormerImage(in_channels=10) 
         self.frequency_transformer = UFormerFreq(in_channels=10)
         self.combiner = UFormerCombo(in_channels=2)
@@ -42,7 +41,7 @@ class FinalModel(nn.Module):
 class FinalModelLineMask(nn.Module):
     def __init__(self, sparsity=1/20, bsn=False):
         super().__init__()
-        self.undersampler = UndersamplerB(sparsity=(sparsity), bsn=bsn, pmask_shape=(128, 5, 1)) # with appropriate parameters for undersampling network
+        self.undersampler = Undersampler(sparsity=(sparsity), bsn=bsn, pmask_shape=(128, 5, 1)) # with appropriate parameters for undersampling network
         self.image_transformer = UFormerImage(in_channels=10) 
         self.frequency_transformer = UFormerFreq(in_channels=10)
         self.combiner = UFormerCombo(in_channels=2)
@@ -70,7 +69,7 @@ class FinalModelLineMask(nn.Module):
 class TransformerImgNet(nn.Module):
     def __init__(self, sparsity=1/20):
         super().__init__()
-        self.undersampler = UndersamplerB(sparsity=(sparsity)) # with appropriate parameters for undersampling network
+        self.undersampler = Undersampler(sparsity=(sparsity)) # with appropriate parameters for undersampling network
         self.image_transformer = UFormerImage(in_channels=10)         
     
     def forward(self, x):
@@ -89,7 +88,7 @@ class TransformerImgNet(nn.Module):
 class TransformerFreqNet(nn.Module):
     def __init__(self, sparsity=1/20):
         super().__init__()
-        self.undersampler = UndersamplerB(sparsity=(sparsity)) # with appropriate parameters for undersampling network
+        self.undersampler = Undersampler(sparsity=(sparsity)) # with appropriate parameters for undersampling network
         self.frequency_transformer = UFormerFreq(in_channels=10)        
     
     def forward(self, x):
@@ -107,7 +106,7 @@ class TransformerFreqNet(nn.Module):
 class UnetFull(nn.Module):
     def __init__(self, sparsity=1/20):
         super().__init__()
-        self.undersampler = UndersamplerB(sparsity=(sparsity)) # with appropriate parameters for undersampling network
+        self.undersampler = Undersampler(sparsity=(sparsity)) # with appropriate parameters for undersampling network
         self.image_transformer = UNetImage(in_channels=10, out_channels=1, init_features=4)
         self.frequency_transformer = UNetFrequency(in_channels=10, out_channels=2, init_features=4)
         self.combiner = UNetCombination(in_channels=2, out_channels=1, init_features=4)
@@ -136,7 +135,7 @@ class UnetFull(nn.Module):
 class UnetImg(nn.Module):
     def __init__(self, sparsity=1/20):
         super().__init__()
-        self.undersampler = UndersamplerB(sparsity=(sparsity)) # with appropriate parameters for undersampling network
+        self.undersampler = Undersampler(sparsity=(sparsity)) # with appropriate parameters for undersampling network
         self.image_transformer = UNetImage(in_channels=10, out_channels=1, init_features=4)
     
     def forward(self, x, writer=None, epoch=0):
@@ -154,7 +153,7 @@ class UnetImg(nn.Module):
 class UnetFreq(nn.Module):
     def __init__(self, sparsity=1/20):
         super().__init__()
-        self.undersampler = UndersamplerB(sparsity=(sparsity)) # with appropriate parameters for undersampling network
+        self.undersampler = Undersampler(sparsity=(sparsity)) # with appropriate parameters for undersampling network
         self.frequency_transformer = UNetFrequency(in_channels=10, out_channels=2, init_features=4)
     
     def forward(self, x, writer=None, epoch=0):
